@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const jsonwebtoken = require('jsonwebtoken');
 const Usuario = require('../model/usuario');
 const Reciclagem = require('../model/reciclagem');
 
@@ -25,7 +25,7 @@ const atualizarUsuario = async (id, atualizacao) => {
     const usuario = await Usuario.findOne({_id: new mongoose.Types.ObjectId(id)}).exec();
     
     if (usuario == null) {
-        return 'Usuário não encontrado!!!';
+        return null;
     } else {
         const resultado = await Usuario.updateOne({_id: new mongoose.Types.ObjectId(id)}, {senha: atualizacao});
         return resultado;
@@ -36,10 +36,26 @@ const deletarUsuario = async (id) => {
     const usuario = await Usuario.findOne({_id: new mongoose.Types.ObjectId(id)}).exec();
     
     if (usuario == null) {
-        return 'Usuário não encontrado!!!';
+        return null;
     } else {
         const resultado = await Usuario.deleteOne({_id: new mongoose.Types.ObjectId(id)});
         return resultado;
+    }
+}
+
+const login = async (id, username, senha) => {
+    const usuario = await Usuario.findOne({_id: new mongoose.Types.ObjectId(id)}).exec();
+    if (usuario){
+        if (usuario.nome == username){
+            if (usuario.senha == senha) {
+                const token = jsonwebtoken.sign({nome: username, id: id}, "topsecret");
+                return {valido: true, token: token};
+            } else return {valido: false};
+        } else {
+            return {valido:false};
+        }
+    } else {
+        return {valido:false};
     }
 }
 
@@ -47,3 +63,4 @@ module.exports.criarUsuario = criarUsuario;
 module.exports.visualizarUsuario = visualizarUsuario;
 module.exports.atualizarUsuario = atualizarUsuario;
 module.exports.deletarUsuario = deletarUsuario;
+module.exports.login = login;

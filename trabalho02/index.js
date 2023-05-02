@@ -1,9 +1,25 @@
+const express = require('express');
 const mongoose = require('mongoose');
 const premioController = require('./controller/premio-controller');
 const usuarioController = require('./controller/usuario-controller');
 const reciclagemController = require('./controller/reciclagem-controller');
+const usuarioRoute = require('./routes/usuario-route')
 
 const uri = "mongodb+srv://zouyilai:zouyilai@cluster-zou.tpwhkjr.mongodb.net/reciclagem?retryWrites=true&w=majority";
+
+const app = express();
+
+app.use(usuarioRoute);
+
+app.use((req, res) => {
+    res.status(404).json({msg: "Endpoint inexistente!"})
+})
+
+mongoose.connect(uri)
+        .then(() => {
+          app.listen(3000, () => console.log("Servidor iniciado!"));
+}).catch ((err) => console.log(err));
+
 
 mongoose.connect(uri).then(async (conn) => {
 
