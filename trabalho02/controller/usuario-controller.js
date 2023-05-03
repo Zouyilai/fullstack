@@ -45,10 +45,11 @@ const deletarUsuario = async (id) => {
 
 const login = async (id, username, senha) => {
     const usuario = await Usuario.findOne({_id: new mongoose.Types.ObjectId(id)}).exec();
-    if (usuario){
+    if (usuario != null){
         if (usuario.nome == username){
             if (usuario.senha == senha) {
                 const token = jsonwebtoken.sign({nome: username, id: id}, "topsecret");
+                // console.log(usuario, token);
                 return {valido: true, token: token};
             } else return {valido: false};
         } else {

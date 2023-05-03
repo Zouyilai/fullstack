@@ -74,15 +74,28 @@ router.delete('/usuario/:id', async (req, res) => {
 })
 
 // /usuario/login (POST): efetuar o login do usuário e retorna um token composto pelo nome e _id
-router.post('/usuario/login/', (req, res) => {
-    const login = usuarioController.login(req.body.id, req.body.username, req.body.senha);
+router.post('/usuario/login/', async (req, res) => {
+    const login = await usuarioController.login(req.body.id, req.body.nome, req.body.senha);
+    // console.log(login);
     if(login.valido){
-        // res.json({resultado: "Login Ok!"});
         res.json(login);
-    } else res.status(401).json(login);
-    // else res.status(401).json({resultado: 'Usuário / senha inválidos!'})
+    } else res.status(401).json({login: login, resultado: "erro"});
 })
 
+
+// const authHeader = req.headers["authorization"];
+// console.log(authHeader);
+// const token = authHeader.split(" ")[1]
+// //para a leitura do variável;
+// // const token = req.params.token;
+// var decodificado;
+// try {
+//     decodificado = jsonwebtoken.verify(token, process.env.SEGREDO);
+//     // decodificado = jsonwebtoken.verify(token, "topsecret");
+// } catch (err) {
+//     res.status(400).json({resultado: 'Problema para alterar a senha!'})
+//     return;
+// }
 
 
 // //valida user e senha
