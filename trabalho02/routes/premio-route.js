@@ -103,6 +103,28 @@ router.put('/premio/:id',
 
 
 // /premio/{id} (DELETE): remover um prêmio pelo id
+router.delete('/premio/:id', async (req, res) => {
+    const authHeader = req.headers["authorization"];
+        if(authHeader){
+            const token = authHeader.split(" ")[1]
+            var decodificado;
+            try {
+                decodificado = jsonwebtoken.verify(token, "topsecret");
+            } catch (err) {
+                res.status(401).json({resultado: 'Token inválido!'});
+                return;
+            }
+        const idPremio = req.params.id;
+        const resultado = await premioController.deletarPremio(idPremio);
+        if(resultado) {
+            res.status(200).json({resultado: resultado});
+        } else {
+            res.status(404).json({resultado: "Usuário não encontrado!"});
+        }
+    } else {
+        res.status(400).json({resultado: 'Informe o token!'});
+    }
+})
 
 
 module.exports = router;
