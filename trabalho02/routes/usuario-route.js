@@ -27,7 +27,7 @@ router.post('/usuario',
                                                             req.body.longitude);
             res.status(200).json({resultado: 'Usuário criado!', usuario: novo});
         } else {
-            res.status(401).json(validacao);
+            res.status(400).json(validacao);
         }
 })
 
@@ -45,7 +45,7 @@ router.get('/usuario/:id', async (req, res) => {
 // /usuario/{id} (PUT): atualiza um usuário pelo id
 router.put('/usuario/:id', 
     body('senha').notEmpty().withMessage("Senha inválida!"),
-    body('senha').isLength({ min: 6 }).withMessage("A senha deve ter no mínimo 6 dígitos!"),
+    body('senha').isLength({ min: 6 }).withMessage("A senha nova deve ter no mínimo 6 dígitos!"),
     async (req, res) => {
         const validacao = validationResult(req).array();
         if (validacao.length === 0) {
@@ -58,7 +58,7 @@ router.put('/usuario/:id',
                 res.status(404).json({resultado: 'Usuário não encontrado!'});
             }
         } else {
-            res.status(401).json(validacao);
+            res.status(400).json(validacao);
         }
 })
 
@@ -74,77 +74,20 @@ router.delete('/usuario/:id', async (req, res) => {
 })
 
 // /usuario/login (POST): efetuar o login do usuário e retorna um token composto pelo nome e _id
-router.post('/usuario/login/', async (req, res) => {
-    const login = await usuarioController.login(req.body.id, req.body.nome, req.body.senha);
-    // console.log(login);
-    if(login.valido){
-        res.json(login);
-    } else res.status(401).json({login: login, resultado: "erro"});
+router.post('/usuario/login/', 
+    body('nome').notEmpty().withMessage("Nome inválido!"),
+    body('senha').notEmpty().withMessage("Senha inválida!"),
+    async (req, res) => {
+        const validacao = validationResult(req).array();
+        if (validacao.length === 0) {
+            const login = await usuarioController.login(req.body.nome, req.body.senha);
+            if(login.valido){
+                res.json(login);
+            } else res.status(401).json({login: login, resultado: "erro"});
+        } else {
+            res.status(401).json(validacao);
+        }
 })
-
-
-// const authHeader = req.headers["authorization"];
-// console.log(authHeader);
-// const token = authHeader.split(" ")[1]
-// //para a leitura do variável;
-// // const token = req.params.token;
-// var decodificado;
-// try {
-//     decodificado = jsonwebtoken.verify(token, process.env.SEGREDO);
-//     // decodificado = jsonwebtoken.verify(token, "topsecret");
-// } catch (err) {
-//     res.status(400).json({resultado: 'Problema para alterar a senha!'})
-//     return;
-// }
-
-
-// //valida user e senha
-// router.post('/usuario/login/', (req, res) => {
-//     // const criptoSenha = bcryptjs.hashSync(req.body.senha)
-//     // console.log(bcryptjs.compareSync(req.body.senha, criptoSenha))
-//     const login = usuario_controller.login(req.body.username, req.body.senha);
-//     if(login.valido){
-//         // res.json({resultado: "Login Ok!"});
-//         res.json(login);
-//     } else res.status(401).json(login);
-//     // else res.status(401).json({resultado: 'Usuário / senha inválidos!'})
-// })
-
-
-// //alterar a senha de um usuario
-// //: variável
-// // router.put('/usuario/novasenha/:username', (req, res) => {
-// //     //para a leitura do variável
-// //     const username = req.params.username;
-// //     const novaSenha = req.body.senha;
-// //     if (usuario_controller.alterarSenha(username, novaSenha)){
-// //         res.json({resultado: "Senha alterada com sucesso!"});
-// //     } else res.status(400).json({resultado: 'Problema para alterar a senha!'})
-// // })
-
-// router.put('/usuario/novasenha', (req, res) => {
-// // router.put('/usuario/novasenha/:token', (req, res) => {
-//     //pegar o token no header
-//     const authHeader = req.headers["authorization"];
-//     console.log(authHeader);
-//     const token = authHeader.split(" ")[1]
-//     //para a leitura do variável;
-//     // const token = req.params.token;
-//     var decodificado;
-//     try {
-//         decodificado = jsonwebtoken.verify(token, process.env.SEGREDO);
-//         // decodificado = jsonwebtoken.verify(token, "topsecret");
-//     } catch (err) {
-//         res.status(400).json({resultado: 'Problema para alterar a senha!'})
-//         return;
-//     }
-//     //decodificar o token 
-//     const novaSenha = req.body.senha;
-//     console.log(decodificado)
-//     if (usuario_controller.alterarSenha(decodificado.username, novaSenha)){
-//         res.json({resultado: "Senha alterada com sucesso!"});
-//     } else res.status(400).json({resultado: 'Problema para alterar a senha!'})
-// })
 
 module.exports = router;
 
