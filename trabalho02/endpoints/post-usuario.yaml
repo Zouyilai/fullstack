@@ -1,0 +1,44 @@
+openapi: 3.0.9
+info:
+  title: Gestão de Usuários
+  version: '1.0'
+servers:
+  - url: http://localhost:3000
+components:
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        nome:
+          type: string
+        senha:
+          type: string
+        pontos: 
+          type: number
+        latitude:
+          type: number
+        longitude:
+          type: number
+paths:
+  /usuario:
+    post:
+      operationId: criarUsuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '200':
+          description: Usuario criado com sucesso!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultado: 
+                    type: string
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Parâmetros inválidos!
