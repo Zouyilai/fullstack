@@ -48,9 +48,27 @@ const listarPremioDisponivel = async (pontos) => {
     return resultado;
 }
 
+const menosUmPremio = async (id) => {
+    const resultado = await Premio.findOne({_id: new mongoose.Types.ObjectId(id)});
+    if (resultado == null) {
+        return null
+    } else {
+        if (resultado.quantidade > 0) {
+            const novo = await Premio.updateOne({_id: new mongoose.Types.ObjectId(id)}, {quantidade: resultado.quantidade - 1});
+        } else {
+            return {msg: "Não foi possível realizar a operação (quantidade insuficiente)", execucao: false}
+        }
+        return {msg: "Sucesso", 
+                quantidadeAntiga: resultado.quantidade,
+                quantidadeNova: resultado.quantidade-1,
+                execucao: true};
+    }
+}
+
 module.exports.criarPremio = criarPremio;
 module.exports.visualizarPremio = visualizarPremio;
 module.exports.atualizarPremio = atualizarPremio;
 module.exports.deletarPremio = deletarPremio;
 module.exports.listarPremios = listarPremios;
 module.exports.listarPremioDisponivel = listarPremioDisponivel;
+module.exports.menosUmPremio = menosUmPremio;

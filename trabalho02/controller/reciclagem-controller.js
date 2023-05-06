@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Usuario = require('../model/usuario');
 const Reciclagem = require('../model/reciclagem');
 
-const criarReciclagem = async (item, imagem, peso, data, pontos, usuarioId) => {
+const criarReciclagem = async (item, imagem, peso, pontos, usuarioId) => {
     let session;
     try {
         session = await mongoose.startSession();
@@ -13,7 +13,7 @@ const criarReciclagem = async (item, imagem, peso, data, pontos, usuarioId) => {
             let reciclagem = new Reciclagem({item: item,
                                              imagem: imagem, 
                                              peso: peso,
-                                             data: data,
+                                             data: new Date(),
                                              pontos: pontos,
                                              usuario: usuario,
                                              });
@@ -23,6 +23,8 @@ const criarReciclagem = async (item, imagem, peso, data, pontos, usuarioId) => {
             await usuario.save({session: session});
             session.commitTransaction();
             return reciclagem;
+        } else {
+            return null;
         }
         
     } catch (error) {
@@ -72,8 +74,41 @@ const deletarReciclagem = async (id) => {
 }
 
 
+const listarReciclagens = async (id) => {
+    const usuario = await Usuario.findOne({_id: new mongoose.Types.ObjectId(id)}).exec();
+    if (usuario) {
+        const resultado = await Reciclagem.find({usuario: new mongoose.Types.ObjectId(id)}).exec();
+        return resultado;
+    } else {
+        return null;
+    }
+}
+
+
+const pontoTotalUsuario = async (id) => {
+    const usuario = await Usuario.findOne({_id: new mongoose.Types.ObjectId(id)}).exec();
+    if (usuario) {
+        var totalPontos = 0; 
+        var totalPeso = 0; 
+        
+        function somarPontos(pontos, peso) {
+            totalPontos += pontos;
+            totalPeso += peso;
+        }
+
+        const resultado = await Reciclagem.find({usuario: new mongoose.Types.ObjectId(id)}).exec();
+        resultado.forEach((item) => somarPontos(item.pontos, item.peso));
+
+        return {totalPontos: totalPontos, totalPeso:totalPeso};
+    } else {
+        return null;
+    }
+}
+
 
 module.exports.criarReciclagem = criarReciclagem;
 module.exports.visualizarReciclagem = visualizarReciclagem;
 module.exports.atualizarReciclagem = atualizarReciclagem;
 module.exports.deletarReciclagem = deletarReciclagem;
+module.exports.listarReciclagens = listarReciclagens;
+module.exports.pontoTotalUsuario = pontoTotalUsuario;

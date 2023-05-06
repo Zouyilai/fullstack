@@ -37,7 +37,7 @@ router.post('/premio',
                 res.status(400).json(validacao);
             }
         } else {
-            res.status(400).json({resultado: 'Informe o token!'});
+            res.status(401).json({resultado: 'Informe o token!'});
         }
 })
 
@@ -63,7 +63,7 @@ router.get('/premio/:id', async (req, res) => {
             res.status(404).json({resultado: "Premio não encontrado!"});
         }
     } else {
-        res.status(400).json({resultado: 'Informe o token!'});
+        res.status(401).json({resultado: 'Informe o token!'});
     }
 })
 
@@ -98,7 +98,7 @@ router.put('/premio/:id',
                 res.status(400).json(validacao);
             }
         } else {
-            res.status(400).json({resultado: 'Informe o token!'});
+            res.status(401).json({resultado: 'Informe o token!'});
         }
 })
 
@@ -123,7 +123,7 @@ router.delete('/premio/:id', async (req, res) => {
             res.status(404).json({resultado: "Prêmio não encontrado!"});
         }
     } else {
-        res.status(400).json({resultado: 'Informe o token!'});
+        res.status(401).json({resultado: 'Informe o token!'});
     }
 })
 
@@ -145,7 +145,7 @@ router.get('/premio', async (req, res) => {
         const resultado = await premioController.listarPremios();
         res.status(200).json({resultado: resultado});
     } else {
-        res.status(400).json({resultado: 'Informe o token!'});
+        res.status(401).json({resultado: 'Informe o token!'});
     }
 })
 
@@ -168,7 +168,7 @@ router.get('/premio/disponivel/:pontos', async (req, res) => {
         const resultado = await premioController.listarPremioDisponivel(pontos);
         res.status(200).json({resultado: resultado});
     } else {
-        res.status(400).json({resultado: 'Informe o token!'});
+        res.status(401).json({resultado: 'Informe o token!'});
     }
 })
 
