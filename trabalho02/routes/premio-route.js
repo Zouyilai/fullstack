@@ -67,6 +67,7 @@ router.get('/premio/:id', async (req, res) => {
     }
 })
 
+
 // /premio/{id} (PUT): atualizar um prêmio pelo id
 router.put('/premio/:id', 
     body('quantidade').notEmpty().withMessage("Quantidade nova inválida!"),
@@ -119,8 +120,53 @@ router.delete('/premio/:id', async (req, res) => {
         if(resultado) {
             res.status(200).json({resultado: resultado});
         } else {
-            res.status(404).json({resultado: "Usuário não encontrado!"});
+            res.status(404).json({resultado: "Prêmio não encontrado!"});
         }
+    } else {
+        res.status(400).json({resultado: 'Informe o token!'});
+    }
+})
+
+
+// /premio (GET): lista todos os prêmios
+router.get('/premio', async (req, res) => {
+    const authHeader = req.headers["authorization"];
+    if(authHeader){
+        const token = authHeader.split(" ")[1]
+        var decodificado;
+        try {
+            decodificado = jsonwebtoken.verify(token, "topsecret");
+            // console.log(decodificado);
+        } catch (err) {
+            res.status(401).json({resultado: 'Token inválido!'});
+            return;
+        }
+
+        const resultado = await premioController.listarPremios();
+        res.status(200).json({resultado: resultado});
+    } else {
+        res.status(400).json({resultado: 'Informe o token!'});
+    }
+})
+
+
+///premio/disponivel/{pontos} (GET): listar todos os prêmios disponíveis de acordo com os pontos necessários
+router.get('/premio/disponivel/:pontos', async (req, res) => {
+    const authHeader = req.headers["authorization"];
+    if(authHeader){
+        const token = authHeader.split(" ")[1]
+        var decodificado;
+        try {
+            decodificado = jsonwebtoken.verify(token, "topsecret");
+            // console.log(decodificado);
+        } catch (err) {
+            res.status(401).json({resultado: 'Token inválido!'});
+            return;
+        }
+
+        const pontos = req.params.pontos;
+        const resultado = await premioController.listarPremioDisponivel(pontos);
+        res.status(200).json({resultado: resultado});
     } else {
         res.status(400).json({resultado: 'Informe o token!'});
     }
