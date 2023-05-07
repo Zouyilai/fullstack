@@ -15,7 +15,7 @@ const criarReciclagem = async (item, imagem, peso, pontos, usuarioId) => {
                                              peso: peso,
                                              data: new Date(),
                                              pontos: pontos,
-                                             usuario: usuario,
+                                             usuario: usuario._id,
                                              });
             reciclagem = await reciclagem.save({session: session});
             usuario.pontos = usuario.pontos + pontos;
@@ -38,6 +38,7 @@ const visualizarReciclagem = async (id) => {
     return resultado;
 }
 
+//.populate("usuario").
 const atualizarReciclagem = async (id, atualizacao) => {
     const reciclagem = await Reciclagem.findOne({_id: new mongoose.Types.ObjectId(id)}).exec();
     
