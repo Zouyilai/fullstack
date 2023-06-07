@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ant-design/icons": "^5.1.0",
+    "antd": "^5.5.1",
     "mongodb": "^5.1.0"
   }
 }
